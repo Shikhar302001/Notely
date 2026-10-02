@@ -2,6 +2,9 @@
 
 Notely is a real-time collaborative note-taking application built with Spring Boot and WebSockets. It allows multiple users to edit a shared text pad simultaneously, with changes reflected instantly across all connected clients. The application features optimistic locking to handle version conflicts gracefully.
 
+**Access the  Live Application:**
+Open your web browser and navigate to `https://notely-kh3m.onrender.com/`.
+
 ## Features
 
 *   **Real-Time Collaboration**: Changes made by one user are broadcast to all other clients viewing the same pad in real-time.
@@ -9,7 +12,7 @@ Notely is a real-time collaborative note-taking application built with Spring Bo
 *   **Version Conflict Handling**: Implements an optimistic locking mechanism to prevent lost updates. If a user tries to save an outdated version of a pad, they are notified of the conflict and prompted to load the latest version.
 *   **Simple Pad Management**: Create, retrieve, and update pads using simple, shareable IDs.
 *   **RESTful API**: Provides a clean REST API for managing pads.
-*   **Persistent Storage**: Uses an H2 file-based database to persist pad content.
+*   **Persistent Storage**: Uses an Postgres file-based database to persist pad content.
 
 ## Tech Stack
 
@@ -20,7 +23,7 @@ Notely is a real-time collaborative note-taking application built with Spring Bo
     *   Spring Data JPA
     *   Hibernate
 *   **Database**:
-    *   H2 Database Engine
+    *   Postgres Database Engine
 *   **Frontend**:
     *   HTML5
     *   CSS3
@@ -123,7 +126,6 @@ The application uses STOMP over WebSockets for real-time communication.
 .
 ├── Dockerfile              # Docker configuration for containerizing the application.
 ├── pom.xml                 # Maven project configuration.
-├── data/                   # H2 database files.
 ├── src/main/java/          # Main application source code.
 │   └── com/notely/
 │       ├── controller/     # REST and WebSocket controllers.
@@ -135,3 +137,4 @@ The application uses STOMP over WebSockets for real-time communication.
 └── src/main/resources/
     ├── application.properties # Spring Boot configuration.
     └── static/index1.html     # The single-page frontend application.
+
