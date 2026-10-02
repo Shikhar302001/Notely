@@ -3,7 +3,7 @@
 Notely is a real-time collaborative note-taking application built with Spring Boot and WebSockets. It allows multiple users to edit a shared text pad simultaneously, with changes reflected instantly across all connected clients. The application features optimistic locking to handle version conflicts gracefully.
 
 **Access the  Live Application:**
-Open your web browser and navigate to `https://notely-kh3m.onrender.com/`.
+Open your web browser and navigate to:  https://notely-kh3m.onrender.com/
 
 ## Features
 
