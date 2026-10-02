@@ -67,3 +67,5 @@ logs/
 
 # Generated images
 generated-images/
+
+data/
