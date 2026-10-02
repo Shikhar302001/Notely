@@ -1,0 +1,1487 @@
+<!DOCTYPE html> <html lang="en"> <head> <meta charset="UTF-8"> <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Notely</title>
+
+<!-- STOMP -->
+<script src="https://cdn.jsdelivr.net/npm/@stomp/stompjs@7.0.0/bundles/stomp.umd.min.js"></script>
+
+<style>
+
+    * {
+        box-sizing: border-box;
+    }
+
+    :root {
+        --bg: #09090b;
+        --card: #111113;
+        --card2: #18181b;
+        --border: #27272a;
+
+        --text: #fafafa;
+        --muted: #a1a1aa;
+
+        --purple: #8b5cf6;
+        --cyan: #06b6d4;
+
+        --green: #22c55e;
+        --red: #ef4444;
+        --yellow: #f59e0b;
+    }
+
+    body {
+
+        margin: 0;
+
+        min-height: 100vh;
+
+        background:
+
+            radial-gradient(
+                circle at 10% 0%,
+                rgba(139, 92, 246, .20),
+                transparent 30%
+            ),
+
+            radial-gradient(
+                circle at 90% 100%,
+                rgba(6, 182, 212, .12),
+                transparent 30%
+            ),
+
+            var(--bg);
+
+        color: var(--text);
+
+        font-family:
+            Inter,
+            system-ui,
+            -apple-system,
+            BlinkMacSystemFont,
+            "Segoe UI",
+            sans-serif;
+    }
+
+    /* =========================
+       HEADER
+    ========================= */
+
+    header {
+
+        height: 65px;
+
+        padding:
+            0 28px;
+
+        display: flex;
+
+        align-items: center;
+
+        justify-content: space-between;
+
+        border-bottom:
+            1px solid var(--border);
+
+        background:
+            rgba(9, 9, 11, .85);
+
+        backdrop-filter:
+            blur(15px);
+
+        position: sticky;
+
+        top: 0;
+
+        z-index: 10;
+    }
+
+    .brand {
+
+        display: flex;
+
+        align-items: center;
+
+        gap: 10px;
+
+        font-size: 20px;
+
+        font-weight: 800;
+    }
+
+    .logo {
+
+        width: 36px;
+
+        height: 36px;
+
+        border-radius: 10px;
+
+        display: grid;
+
+        place-items: center;
+
+        font-weight: 900;
+
+        background:
+            linear-gradient(
+                135deg,
+                var(--purple),
+                var(--cyan)
+            );
+
+        box-shadow:
+            0 8px 30px
+            rgba(139, 92, 246, .35);
+    }
+
+    .connection {
+
+        display: flex;
+
+        align-items: center;
+
+        gap: 8px;
+
+        color: var(--muted);
+
+        font-size: 13px;
+    }
+
+    .dot {
+
+        width: 9px;
+
+        height: 9px;
+
+        border-radius: 50%;
+
+        background: var(--red);
+    }
+
+    .dot.connected {
+
+        background: var(--green);
+
+        box-shadow:
+            0 0 12px
+            rgba(34, 197, 94, .8);
+    }
+
+    /* =========================
+       MAIN
+    ========================= */
+
+    main {
+
+        width:
+            min(1000px, 100%);
+
+        margin:
+            auto;
+
+        padding:
+            45px 20px 70px;
+    }
+
+    .hero {
+
+        text-align:
+            center;
+
+        margin-bottom:
+            30px;
+    }
+
+    .hero h1 {
+
+        margin:
+            0;
+
+        font-size:
+            clamp(36px, 7vw, 55px);
+
+        letter-spacing:
+            -2px;
+    }
+
+    .hero p {
+
+        color:
+            var(--muted);
+
+        margin-top:
+            10px;
+    }
+
+    /* =========================
+       CONTROLS
+    ========================= */
+
+    .controls {
+
+        display:
+            flex;
+
+        gap:
+            10px;
+
+        padding:
+            8px;
+
+        border:
+            1px solid var(--border);
+
+        border-radius:
+            14px;
+
+        background:
+            rgba(17, 17, 19, .9);
+
+        margin-bottom:
+            14px;
+    }
+
+    .controls input {
+
+        flex:
+            1;
+
+        min-width:
+            0;
+
+        padding:
+            11px 13px;
+
+        border:
+            none;
+
+        outline:
+            none;
+
+        background:
+            transparent;
+
+        color:
+            var(--text);
+
+        font-size:
+            15px;
+    }
+
+    button {
+
+        border:
+            none;
+
+        border-radius:
+            9px;
+
+        padding:
+            11px 17px;
+
+        color:
+            white;
+
+        font-weight:
+            700;
+
+        cursor:
+            pointer;
+
+        transition:
+            .15s;
+    }
+
+    button:hover {
+
+        transform:
+            translateY(-1px);
+    }
+
+    button:disabled {
+
+        opacity:
+            .35;
+
+        cursor:
+            not-allowed;
+
+        transform:
+            none;
+    }
+
+    .load {
+
+        background:
+            #27272a;
+    }
+
+    .load:hover {
+
+        background:
+            #3f3f46;
+    }
+
+    /* =========================
+       INFO
+    ========================= */
+
+    .info {
+
+        display:
+            flex;
+
+        flex-wrap:
+            wrap;
+
+        gap:
+            8px;
+
+        margin-bottom:
+            12px;
+    }
+
+    .badge {
+
+        padding:
+            6px 11px;
+
+        border:
+            1px solid var(--border);
+
+        border-radius:
+            999px;
+
+        background:
+            var(--card);
+
+        color:
+            var(--muted);
+
+        font-size:
+            12px;
+    }
+
+    .badge strong {
+
+        color:
+            var(--text);
+    }
+
+    #version {
+
+        color:
+            #a78bfa;
+
+        font-weight:
+            800;
+    }
+
+    /* =========================
+       EDITOR
+    ========================= */
+
+    .editor {
+
+        overflow:
+            hidden;
+
+        border:
+            1px solid var(--border);
+
+        border-radius:
+            16px;
+
+        background:
+            var(--card);
+
+        box-shadow:
+            0 25px 70px
+            rgba(0, 0, 0, .3);
+    }
+
+    textarea {
+
+        display:
+            block;
+
+        width:
+            100%;
+
+        min-height:
+            480px;
+
+        padding:
+            25px;
+
+        resize:
+            vertical;
+
+        border:
+            none;
+
+        outline:
+            none;
+
+        background:
+            #0d0d0f;
+
+        color:
+            #e4e4e7;
+
+        font-family:
+            "Fira Code",
+            Consolas,
+            monospace;
+
+        font-size:
+            15px;
+
+        line-height:
+            1.8;
+    }
+
+    textarea::placeholder {
+
+        color:
+            #52525b;
+    }
+
+    .footer {
+
+        min-height:
+            65px;
+
+        display:
+            flex;
+
+        align-items:
+            center;
+
+        justify-content:
+            space-between;
+
+        gap:
+            10px;
+
+        padding:
+            10px 14px;
+
+        background:
+            var(--card2);
+
+        border-top:
+            1px solid var(--border);
+    }
+
+    .status {
+
+        color:
+            var(--muted);
+
+        font-size:
+            13px;
+
+        overflow:
+            hidden;
+
+        text-overflow:
+            ellipsis;
+
+        white-space:
+            nowrap;
+    }
+
+    .actions {
+
+        display:
+            flex;
+
+        gap:
+            8px;
+    }
+
+    .save {
+
+        background:
+            linear-gradient(
+                135deg,
+                var(--purple),
+                var(--cyan)
+            );
+    }
+
+    .conflict {
+
+        background:
+            #7f1d1d;
+    }
+
+    .conflict:hover {
+
+        background:
+            #991b1b;
+    }
+
+    /* =========================
+       HELP
+    ========================= */
+
+    .help {
+
+        margin-top:
+            18px;
+
+        padding:
+            20px;
+
+        border:
+            1px solid var(--border);
+
+        border-radius:
+            14px;
+
+        background:
+            rgba(17, 17, 19, .75);
+    }
+
+    .help h3 {
+
+        margin:
+            0 0 12px;
+
+        font-size:
+            15px;
+    }
+
+    .help ol {
+
+        margin:
+            0;
+
+        padding-left:
+            20px;
+
+        color:
+            var(--muted);
+
+        font-size:
+            13px;
+
+        line-height:
+            1.9;
+    }
+
+    code {
+
+        color:
+            #67e8f9;
+
+        background:
+            #09090b;
+
+        padding:
+            2px 5px;
+
+        border-radius:
+            4px;
+    }
+
+    @media (max-width: 650px) {
+
+        header {
+
+            padding:
+                0 15px;
+        }
+
+        main {
+
+            padding:
+                30px 12px;
+        }
+
+        .controls {
+
+            flex-direction:
+                column;
+        }
+
+        .controls button {
+
+            width:
+                100%;
+        }
+
+        .footer {
+
+            flex-direction:
+                column;
+
+            align-items:
+                stretch;
+        }
+
+        .actions {
+
+            flex-direction:
+                column;
+        }
+
+        .actions button {
+
+            width:
+                100%;
+        }
+
+        textarea {
+
+            min-height:
+                400px;
+        }
+    }
+
+</style>
+
+</head> <body> <header>
+<div class="brand">
+
+    <div class="logo">
+        N
+    </div>
+
+    <span>
+        Notely
+    </span>
+
+</div>
+
+<div class="connection">
+
+    <span
+        id="connectionDot"
+        class="dot">
+    </span>
+
+    <span id="connectionText">
+        Connecting...
+    </span>
+
+</div>
+
+</header> <main>
+<div class="hero">
+
+    <h1>
+        Shared Pad
+    </h1>
+
+    <p>
+        Real-time collaborative notes
+    </p>
+
+</div>
+
+<!-- PAD ID -->
+
+<div class="controls">
+
+    <input
+        id="padId"
+        value=""
+        placeholder="Enter PAD ID"
+    >
+
+    <button
+        class="load"
+        onclick="loadPad()">
+
+        Load Pad
+
+    </button>
+
+</div>
+
+<!-- INFO -->
+
+<div class="info">
+
+    <div class="badge">
+
+        Pad:
+
+        <strong id="currentPad">
+            —
+        </strong>
+
+    </div>
+
+    <div class="badge">
+
+        Version:
+
+        <span id="version">
+            —
+        </span>
+
+    </div>
+
+    <div class="badge">
+
+        Characters:
+
+        <strong id="characters">
+            0
+        </strong>
+
+    </div>
+
+</div>
+
+<!-- EDITOR -->
+
+<div class="editor">
+
+    <textarea
+        id="content"
+        placeholder="Start writing..."
+    ></textarea>
+
+    <div class="footer">
+
+        <div
+            id="status"
+            class="status">
+
+            Connecting...
+
+        </div>
+
+        <div class="actions">
+
+            <button
+                id="saveButton"
+                class="save"
+                onclick="savePad()"
+                disabled>
+
+                Save Changes
+
+            </button>
+
+<!--            <button-->
+<!--                id="conflictButton"-->
+<!--                class="conflict"-->
+<!--                onclick="simulateConflict()"-->
+<!--                disabled>-->
+
+<!--                Test Conflict-->
+
+<!--            </button>-->
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- HELP -->
+
+<!--<div class="help">-->
+
+<!--    <h3>-->
+<!--        🧪 Testing-->
+<!--    </h3>-->
+
+<!--    <ol>-->
+
+<!--        <li>-->
+<!--            Open this page in two browser tabs.-->
+<!--        </li>-->
+
+<!--        <li>-->
+<!--            Load-->
+<!--            <code>test-pad</code>-->
+<!--            in both tabs.-->
+<!--        </li>-->
+
+<!--        <li>-->
+<!--            Edit Tab A and click-->
+<!--            <strong>Save Changes</strong>.-->
+<!--        </li>-->
+
+<!--        <li>-->
+<!--            Tab B should automatically receive-->
+<!--            the update.-->
+<!--        </li>-->
+
+<!--        <li>-->
+<!--            To test conflict handling, click-->
+<!--            <strong>Test Conflict</strong>.-->
+<!--        </li>-->
+
+<!--    </ol>-->
+
+<!--</div>-->
+
+</main> <script>
+/* =================================================
+CONFIG
+================================================= */
+
+const API_URL = "/api/pads";
+
+
+const WS_URL =
+    `${location.protocol === "https:" ? "wss" : "ws"}://${location.host}/ws`;
+
+
+/* =================================================
+CLIENT ID
+================================================= */
+
+const clientId =
+crypto.randomUUID();
+
+console.log(
+"Client ID:",
+clientId
+);
+
+/* =================================================
+STATE
+================================================= */
+
+let stompClient = null;
+
+let padSubscription = null;
+
+let conflictSubscription = null;
+
+let currentPadId = null;
+
+let currentVersion = null;
+
+/* =================================================
+ELEMENTS
+================================================= */
+
+const padIdInput =
+document.getElementById("padId");
+
+const content =
+document.getElementById("content");
+
+const currentPad =
+document.getElementById("currentPad");
+
+const version =
+document.getElementById("version");
+
+const characters =
+document.getElementById("characters");
+
+const status =
+document.getElementById("status");
+
+const saveButton =
+document.getElementById("saveButton");
+
+// const conflictButton =
+// document.getElementById("conflictButton");
+
+const connectionDot =
+document.getElementById("connectionDot");
+
+const connectionText =
+document.getElementById("connectionText");
+
+/* =================================================
+STATUS
+================================================= */
+
+function setStatus(message) {
+
+status.textContent =
+    message;
+
+}
+
+/* =================================================
+CHARACTER COUNT
+================================================= */
+
+content.addEventListener(
+"input",
+function() {
+
+    characters.textContent =
+        content.value.length;
+}
+
+);
+
+/* =================================================
+CONNECT
+================================================= */
+
+function connectWebSocket() {
+
+stompClient =
+    new StompJs.Client({
+
+        brokerURL:
+            WS_URL,
+
+        reconnectDelay:
+            5000,
+
+        debug:
+            function(message) {
+
+                console.log(
+                    "[STOMP]",
+                    message
+                );
+            },
+
+        onConnect:
+            function() {
+
+                console.log(
+                    "WebSocket connected"
+                );
+
+                connectionDot
+                    .classList
+                    .add("connected");
+
+                connectionText.textContent =
+                    "Connected";
+
+                setStatus(
+                    "Connected to Notely."
+                );
+
+                subscribeToConflict();
+
+                if (currentPadId) {
+
+                    subscribeToPad();
+                }
+
+            },
+
+        onDisconnect:
+            function() {
+
+                connectionDot
+                    .classList
+                    .remove(
+                        "connected"
+                    );
+
+                connectionText.textContent =
+                    "Disconnected";
+
+                setStatus(
+                    "WebSocket disconnected."
+                );
+            },
+
+        onWebSocketError:
+            function(error) {
+
+                console.error(
+                    "WebSocket error:",
+                    error
+                );
+
+                connectionDot
+                    .classList
+                    .remove(
+                        "connected"
+                    );
+
+                connectionText.textContent =
+                    "Connection failed";
+
+                setStatus(
+                    "WebSocket connection failed."
+                );
+            },
+
+        onStompError:
+            function(frame) {
+
+                console.error(
+                    "STOMP error:",
+                    frame
+                );
+
+                setStatus(
+                    "STOMP server error."
+                );
+            }
+
+    });
+
+stompClient.activate();
+
+}
+
+/* =================================================
+PRIVATE CONFLICT QUEUE
+================================================= */
+
+function subscribeToConflict() {
+
+if (
+    !stompClient ||
+    !stompClient.connected
+) {
+
+    return;
+}
+
+if (conflictSubscription) {
+
+    conflictSubscription.unsubscribe();
+}
+
+conflictSubscription =
+    stompClient.subscribe(
+        "/user/queue/pad-conflict",
+
+        function(message) {
+
+            console.log(
+                "PRIVATE CONFLICT:",
+                message.body
+            );
+
+            const response =
+                JSON.parse(
+                    message.body
+                );
+
+            if (
+                response.type ===
+                "CONFLICT"
+            ) {
+
+                handleConflict(
+                    response.pad
+                );
+            }
+
+        }
+    );
+
+console.log(
+    "Subscribed to private conflict queue"
+);
+
+}
+
+/* =================================================
+PAD TOPIC
+================================================= */
+
+function subscribeToPad() {
+
+if (
+    !stompClient ||
+    !stompClient.connected ||
+    !currentPadId
+) {
+
+    return;
+}
+
+if (padSubscription) {
+
+    padSubscription.unsubscribe();
+}
+
+const destination =
+    `/topic/pads/${currentPadId}`;
+
+padSubscription =
+    stompClient.subscribe(
+        destination,
+
+        function(message) {
+
+            console.log(
+                "PAD MESSAGE:",
+                message.body
+            );
+
+            const response =
+                JSON.parse(
+                    message.body
+                );
+
+            if (
+                response.type !==
+                "UPDATE"
+            ) {
+
+                return;
+            }
+
+            const pad =
+                response.pad;
+
+            content.value =
+                pad.content ?? "";
+
+            currentVersion =
+                pad.version;
+
+            version.textContent =
+                currentVersion;
+
+            characters.textContent =
+                content.value.length;
+
+            setStatus(
+                `Updated to version ${currentVersion}`
+            );
+
+        }
+    );
+
+console.log(
+    "Subscribed to:",
+    destination
+);
+
+}
+
+/* =================================================
+LOAD PAD
+================================================= */
+
+async function loadPad() {
+
+const id =
+    padIdInput.value.trim();
+
+if (!id) {
+
+    setStatus(
+        "Please enter a Pad ID."
+    );
+
+    return;
+}
+
+try {
+
+    setStatus(
+        "Loading pad..."
+    );
+
+    const response =
+        await fetch(
+            `${API_URL}/${encodeURIComponent(id)}`
+        );
+
+    if (!response.ok) {
+
+        throw new Error(
+            `HTTP ${response.status}`
+        );
+    }
+
+    const pad =
+        await response.json();
+
+    currentPadId =
+        id;
+
+    currentPad.textContent =
+        id;
+
+    content.value =
+        pad.content ?? "";
+
+    currentVersion =
+        pad.version;
+
+    version.textContent =
+        currentVersion;
+
+    characters.textContent =
+        content.value.length;
+
+    saveButton.disabled =
+        false;
+
+    // conflictButton.disabled =
+    //     false;
+
+    subscribeToPad();
+
+    setStatus(
+        `Loaded "${id}" — version ${currentVersion}`
+    );
+
+}
+
+catch (error) {
+
+    console.error(
+        "Load error:",
+        error
+    );
+
+    setStatus(
+        `Failed to load pad: ${error.message}`
+    );
+}
+
+}
+
+/* =================================================
+SAVE PAD
+================================================= */
+
+function savePad() {
+
+if (!currentPadId) {
+
+    setStatus(
+        "Load a pad first."
+    );
+
+    return;
+}
+
+if (
+    !stompClient ||
+    !stompClient.connected
+) {
+
+    setStatus(
+        "WebSocket is not connected."
+    );
+
+    return;
+}
+
+if (
+    currentVersion === null ||
+    currentVersion === undefined
+) {
+
+    setStatus(
+        "Version is unknown."
+    );
+
+    return;
+}
+
+const message = {
+
+    content:
+        content.value,
+
+    version:
+        currentVersion,
+
+    userId:
+        clientId
+};
+
+console.log(
+    "SENDING:",
+    message
+);
+
+stompClient.publish({
+
+    destination:
+        `/app/pads/${currentPadId}`,
+
+    body:
+        JSON.stringify(message)
+
+});
+
+setStatus(
+    `Saving version ${currentVersion}...`
+);
+
+}
+
+/* =================================================
+TEST CONFLICT
+================================================= */
+
+function simulateConflict() {
+
+if (!currentPadId) {
+
+    setStatus(
+        "Load a pad first."
+    );
+
+    return;
+}
+
+if (
+    !stompClient ||
+    !stompClient.connected
+) {
+
+    setStatus(
+        "WebSocket is not connected."
+    );
+
+    return;
+}
+
+if (
+    currentVersion === null ||
+    currentVersion === undefined
+) {
+
+    setStatus(
+        "Version is unknown."
+    );
+
+    return;
+}
+
+/*
+ * Deliberately use an OLD version.
+ *
+ * Example:
+ *
+ * Current version = 5
+ *
+ * We send version = 4
+ *
+ * Server should reject it.
+ */
+
+const staleVersion =
+    Math.max(
+        0,
+        currentVersion - 1
+    );
+
+const message = {
+
+    content:
+        content.value +
+        " [CONFLICT TEST]",
+
+    version:
+        staleVersion,
+
+    userId:
+        clientId
+};
+
+console.log(
+    "SENDING STALE VERSION:",
+    message
+);
+
+stompClient.publish({
+
+    destination:
+        `/app/pads/${currentPadId}`,
+
+    body:
+        JSON.stringify(message)
+
+});
+
+setStatus(
+    `Testing stale version ${staleVersion}...`
+);
+
+}
+
+/* =================================================
+HANDLE CONFLICT
+================================================= */
+
+function handleConflict(serverPad) {
+
+console.warn(
+    "VERSION CONFLICT",
+    serverPad
+);
+
+const shouldReload =
+    confirm(
+
+        "⚠ CONFLICT DETECTED\n\n" +
+
+        "Another client modified this pad.\n\n" +
+
+        "Server version: " +
+        serverPad.version +
+        "\n\n" +
+
+        "Load the latest server version?"
+    );
+
+if (shouldReload) {
+
+    content.value =
+        serverPad.content ?? "";
+
+    currentVersion =
+        serverPad.version;
+
+    version.textContent =
+        currentVersion;
+
+    characters.textContent =
+        content.value.length;
+
+    setStatus(
+        `Loaded latest version ${currentVersion}.`
+    );
+
+}
+
+else {
+
+    setStatus(
+        `Conflict detected — server is at version ${serverPad.version}.`
+    );
+}
+
+}
+
+/* =================================================
+ENTER = LOAD
+================================================= */
+
+padIdInput.addEventListener(
+"keydown",
+function(event) {
+
+    if (
+        event.key === "Enter"
+    ) {
+
+        loadPad();
+    }
+}
+
+);
+
+/* =================================================
+START
+================================================= */
+
+connectWebSocket();
+
+</script> </body> </html>
